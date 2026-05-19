@@ -7,6 +7,8 @@ import app.models.user
 import app.models.booking
 import app.models.rating
 from app.api.routes import garages, users, bookings, ratings
+from apscheduler.schedulers.background import BackgroundScheduler
+from app.notifications import send_booking_reminders
 
 Base.metadata.create_all(bind=engine)
 
@@ -20,6 +22,10 @@ app.include_router(garages.router)
 app.include_router(users.router)
 app.include_router(bookings.router)
 app.include_router(ratings.router)
+
+scheduler = BackgroundScheduler()
+scheduler.add_job(send_booking_reminders, 'interval', hours=1)
+scheduler.start()
 
 @app.get("/")
 def root():
