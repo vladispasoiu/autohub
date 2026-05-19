@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, Text
+from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, Text, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.core.database import Base
@@ -24,3 +24,5 @@ class Garage(Base):
     updated_at     = Column(DateTime(timezone=True), onupdate=func.now())
     services       = relationship("Service", back_populates="garage")
     price_from     = Column(Float, default=0.0)
+    bookings       = relationship("Booking", back_populates="garage")
+    ratings        = relationship("GarageRating", back_populates="garage", cascade="all, delete")

@@ -5,7 +5,8 @@ import app.models.garage
 import app.models.service
 import app.models.user
 import app.models.booking
-from app.api.routes import garages, users, bookings
+import app.models.rating
+from app.api.routes import garages, users, bookings, ratings
 
 Base.metadata.create_all(bind=engine)
 
@@ -18,6 +19,7 @@ app = FastAPI(
 app.include_router(garages.router)
 app.include_router(users.router)
 app.include_router(bookings.router)
+app.include_router(ratings.router)
 
 @app.get("/")
 def root():
