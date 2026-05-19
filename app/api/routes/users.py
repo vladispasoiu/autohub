@@ -35,3 +35,12 @@ def login(credentials: UserLogin, db: Session = Depends(get_db)):
 @router.get("/me", response_model=UserResponse)
 def get_me(db: Session = Depends(get_db)):
     return {"message": "Profile endpoint — add token auth here"}
+
+@router.post("/{user_id}/push-token")
+def save_push_token(user_id: int, push_token: str, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    user.push_token = push_token
+    db.commit()
+    return {"status": "ok"}

@@ -12,5 +12,6 @@ class User(Base):
     phone      = Column(String(20))
     password   = Column(String(200), nullable=False)
     is_active  = Column(Boolean, default=True)
+    push_token = Column(String(300), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     ratings  = relationship("GarageRating", back_populates="user", cascade="all, delete")
