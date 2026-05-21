@@ -2,10 +2,24 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.models.user import User
-from app.schemas.user import UserCreate, UserLogin, UserResponse, Token
+from app.schemas.user import UserCreate, UserLogin, UserResponse, Token, ChangePassword
 from app.core.auth import hash_password, verify_password, create_token
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+security = HTTPBearer()
 
 router = APIRouter(prefix="/users", tags=["Users"])
+
+@router.post("/change-password")
+def change_password(data: ChangePassword, credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)):
+    payload = decode_token(credentials.credentials)
+    if not payload:
+        raise HTTPException(status_code=401, detail="Token invalid")
+    user = db.query(User).filter(User.id == int(payload["sub"])).first()
+    if not user or not verify_password(data.current_password, user.password):
+        raise HTTPException(status_code=400, detail="Parola curentă e greșită")
+    user.password = hash_password(data.new_password)
+    db.commit()
+    return {"status": "ok"}
 
 @router.post("/register", response_model=Token)
 def register(user: UserCreate, db: Session = Depends(get_db)):
