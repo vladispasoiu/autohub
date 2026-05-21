@@ -14,4 +14,5 @@ class User(Base):
     is_active  = Column(Boolean, default=True)
     push_token = Column(String(300), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    ratings  = relationship("GarageRating", back_populates="user", cascade="all, delete")
+    ratings    = relationship("GarageRating", back_populates="user", cascade="all, delete")
+    cars       = relationship("UserCar", back_populates="user", cascade="all, delete")
