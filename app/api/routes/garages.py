@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from typing import List, Optional
 from app.core.database import get_db
 from app.models.garage import Garage
+from app.models.service import Service
 from app.schemas.garage import GarageCreate, GarageResponse, GarageUpdate
 
 router = APIRouter(prefix="/garages", tags=["Garages"])
@@ -24,15 +25,23 @@ def list_garages(
     search: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
-    query = db.query(Garage).filter(Garage.is_active == True)
+    query = db.query(Garage).options(joinedload(Garage.services)).filter(Garage.is_active == True)
     if city:
         query = query.filter(Garage.city.ilike(f"%{city}%"))
     if search:
-        query = query.filter(Garage.name.ilike(f"%{search}%"))
+        # filtrează după nume garaj SAU după serviciile oferite
+        from sqlalchemy import or_
+        query = query.filter(
+            or_(
+                Garage.name.ilike(f"%{search}%"),
+                Garage.services.any(Service.name.ilike(f"%{search}%"))
+            )
+        )
     return query.order_by(Garage.rating.desc()).all()
+
 @router.get("/{garage_id}", response_model=GarageResponse)
 def get_garage(garage_id: int, db: Session = Depends(get_db)):
-    garage = db.query(Garage).filter(Garage.id == garage_id).first()
+    garage = db.query(Garage).options(joinedload(Garage.services)).filter(Garage.id == garage_id).first()
     if not garage:
         raise HTTPException(status_code=404, detail="Garage not found")
     return garage

@@ -1,5 +1,16 @@
 from pydantic import BaseModel, EmailStr
-from typing import Optional
+from typing import Optional, List
+
+class ServiceResponse(BaseModel):
+    id: int
+    name: str
+    description: Optional[str] = None
+    price_min: Optional[float] = None
+    price_max: Optional[float] = None
+    duration_minutes: Optional[int] = None
+
+    class Config:
+        from_attributes = True
 
 class GarageCreate(BaseModel):
     name: str
@@ -41,6 +52,7 @@ class GarageResponse(BaseModel):
     rating: float
     total_reviews: int
     price_from: Optional[float]
+    services: List[ServiceResponse] = []
 
     class Config:
         from_attributes = True
