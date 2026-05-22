@@ -7,6 +7,10 @@ class BookingCreate(BaseModel):
     service: Optional[str] = None
     date: str
     time_slot: str
+    car_info: Optional[str] = None
+
+class BookingUpdate(BaseModel):
+    status: Optional[str] = None
 
 class BookingResponse(BaseModel):
     id: int
@@ -16,6 +20,7 @@ class BookingResponse(BaseModel):
     date: str
     time_slot: str
     status: str
+    car_info: Optional[str] = None
 
     class Config:
         from_attributes = True
