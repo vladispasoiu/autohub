@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.database import engine, Base
 import app.models.garage
@@ -11,7 +12,12 @@ from app.api.routes import garages, users, bookings, ratings
 from app.api.routes.cars import router as cars_router
 from apscheduler.schedulers.background import BackgroundScheduler
 from app.notifications import send_booking_reminders
-from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI(
+    title=settings.APP_NAME,
+    description="Find, compare and book car services in Romania",
+    version="0.1.0"
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -19,13 +25,6 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-)
-
-
-app = FastAPI(
-    title=settings.APP_NAME,
-    description="Find, compare and book car services in Romania",
-    version="0.1.0"
 )
 
 Base.metadata.create_all(bind=engine)
