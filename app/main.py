@@ -11,6 +11,16 @@ from app.api.routes import garages, users, bookings, ratings
 from app.api.routes.cars import router as cars_router
 from apscheduler.schedulers.background import BackgroundScheduler
 from app.notifications import send_booking_reminders
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 app = FastAPI(
     title=settings.APP_NAME,
