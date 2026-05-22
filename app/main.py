@@ -10,6 +10,7 @@ import app.models.rating
 import app.models.car
 from app.api.routes import garages, users, bookings, ratings
 from app.api.routes.cars import router as cars_router
+from app.api.routes.services import router as services_router
 from apscheduler.schedulers.background import BackgroundScheduler
 from app.notifications import send_booking_reminders
 
@@ -34,6 +35,7 @@ app.include_router(users.router)
 app.include_router(bookings.router)
 app.include_router(ratings.router)
 app.include_router(cars_router)
+app.include_router(services_router)
 
 scheduler = BackgroundScheduler()
 scheduler.add_job(send_booking_reminders, 'interval', hours=1)
@@ -46,3 +48,4 @@ def root():
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
