@@ -58,3 +58,29 @@ def save_push_token(user_id: int, push_token: str, db: Session = Depends(get_db)
     user.push_token = push_token
     db.commit()
     return {"status": "ok"}
+
+@router.post("/owner/register")
+def owner_register(data: GarageOwnerRegister, db: Session = Depends(get_db)):
+    existing = db.query(User).filter(User.email == data.email).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Email deja înregistrat")
+    user = User(
+        full_name=data.full_name,
+        email=data.email,
+        phone=data.phone,
+        password=hash_password(data.password),
+        is_active=True,
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    token = create_token({"sub": str(user.id), "email": user.email, "role": "owner"})
+    return {"access_token": token, "token_type": "bearer", "user": {"id": user.id, "full_name": user.full_name, "email": user.email}}
+
+@router.post("/owner/login")
+def owner_login(data: GarageOwnerLogin, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == data.email).first()
+    if not user or not verify_password(data.password, user.password):
+        raise HTTPException(status_code=401, detail="Email sau parolă greșită")
+    token = create_token({"sub": str(user.id), "email": user.email, "role": "owner"})
+    return {"access_token": token, "token_type": "bearer", "user": {"id": user.id, "full_name": user.full_name, "email": user.email}}

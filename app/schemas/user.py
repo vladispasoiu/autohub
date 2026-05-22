@@ -29,3 +29,13 @@ class Token(BaseModel):
 class ChangePassword(BaseModel):
     current_password: str
     new_password: str
+
+class GarageOwnerRegister(BaseModel):
+    full_name: str
+    email: EmailStr
+    password: str
+    phone: Optional[str] = None
+
+class GarageOwnerLogin(BaseModel):
+    email: EmailStr
+    password: str
