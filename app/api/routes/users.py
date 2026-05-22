@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.models.user import User
-from app.schemas.user import UserCreate, UserLogin, UserResponse, Token, ChangePassword
-from app.core.auth import hash_password, verify_password, create_token
+from app.schemas.user import UserCreate, UserLogin, UserResponse, Token, ChangePassword, GarageOwnerRegister, GarageOwnerLogin
+from app.core.auth import hash_password, verify_password, create_token, decode_token
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 security = HTTPBearer()
 
